@@ -1,4 +1,4 @@
---// Services
+-- Services
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
@@ -6,111 +6,92 @@ local RunService = game:GetService("RunService")
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
---// ScreenGui
-local Gui = Instance.new("ScreenGui")
-Gui.Name = "ProjectPP_Loading"
-Gui.IgnoreGuiInset = true
-Gui.ResetOnSpawn = false
-Gui.DisplayOrder = 999
-Gui.Parent = playerGui
+-- ScreenGui
+local ProjectPP = Instance.new("ScreenGui")
+ProjectPP.Name = "Project PP"
+ProjectPP.Parent = playerGui
+ProjectPP.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+ProjectPP.DisplayOrder = 999
+ProjectPP.ResetOnSpawn = false
 
---// Background
-local BG = Instance.new("Frame")
-BG.Parent = Gui
-BG.Size = UDim2.new(1,0,1,0)
-BG.BackgroundColor3 = Color3.fromRGB(0,0,0)
-BG.BackgroundTransparency = 1
-BG.BorderSizePixel = 0
-
---// Helper
-local function Circle(parent, size, pos, z, id)
-	local img = Instance.new("ImageLabel")
-	img.Parent = parent
-	img.Size = size
-	img.Position = pos
-	img.AnchorPoint = Vector2.new(0.5,0.5)
-	img.BackgroundTransparency = 1
-	img.Image = "rbxassetid://"..id
-	img.ZIndex = z
-	local c = Instance.new("UICorner", img)
-	c.CornerRadius = UDim.new(1,0)
-	return img
+-- ฟังก์ชันสร้าง ImageLabel เป็นวงกลม
+local function CreateCircularImage(parent, size, position, zIndex, imageId)
+    local img = Instance.new("ImageLabel")
+    img.Parent = parent
+    img.Size = size
+    img.Position = position
+    img.ZIndex = zIndex or 1
+    img.BackgroundTransparency = 1
+    img.Image = "rbxassetid://"..imageId
+    img.AnchorPoint = Vector2.new(0.5, 0.5)
+    
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0.5, 0)
+    corner.Parent = img
+    
+    return img
 end
 
---// Center
-local Center = Instance.new("Frame")
-Center.Parent = BG
-Center.Size = UDim2.new(0,160,0,160)
-Center.Position = UDim2.new(0.5,0,0.45,0)
-Center.AnchorPoint = Vector2.new(0.5,0.5)
-Center.BackgroundTransparency = 1
+-- trajectory ใช้ ID เดิม
+local trajectory = CreateCircularImage(ProjectPP, UDim2.new(0, 0, 0, 0), UDim2.new(0, 0, 0, 0), 0, "7102118272")
 
---// Ring (WHITE)
-local Ring = Circle(Center, UDim2.new(0,160,0,160), UDim2.new(0.5,0,0.5,0), 1, "7102118272")
-Ring.ImageColor3 = Color3.fromRGB(255,255,255)
+-- โลโก้วงกลมใหญ่ซ้อน (R) ใช้ ID ใหม่
+local R = CreateCircularImage(ProjectPP, UDim2.new(0, 110, 0, 110), UDim2.new(0.1, 0, 0.8, 0), 3, "96254927950057")
 
---// Logo
-local Logo = Circle(Center, UDim2.new(0,100,0,100), UDim2.new(0.5,0,0.5,0), 2, "96254927950057")
+-- ดาวเคราะห์เล็ก (Earth) ใช้ ID ใหม่
+local Earth = CreateCircularImage(R, UDim2.new(0, 20, 0, 20), UDim2.new(0.5, 0, 0.5, 0), 4, "96254927950057")
 
---// Planet (bigger)
-local Planet = Circle(Center, UDim2.new(0,30,0,30), UDim2.new(0.5,0,0,0), 3, "96254927950057")
+-- เอฟเฟกต์ Glow / Green ใช้ ID ใหม่
+local Green = CreateCircularImage(ProjectPP, UDim2.new(0, 110, 0, 110), UDim2.new(0.1, 0, 0.8, 0), 6, "96254927950057")
+Green.ImageTransparency = 1
 
---// Percent Background
-local PercentBG = Instance.new("Frame")
-PercentBG.Parent = BG
-PercentBG.Size = UDim2.new(0,120,0,36)
-PercentBG.Position = UDim2.new(0.5,0,0.63,0)
-PercentBG.AnchorPoint = Vector2.new(0.5,0.5)
-PercentBG.BackgroundColor3 = Color3.fromRGB(20,20,20)
-PercentBG.BackgroundTransparency = 0.2
-PercentBG.ZIndex = 5
-local pc = Instance.new("UICorner", PercentBG)
-pc.CornerRadius = UDim.new(0,10)
-
---// Percent Text
-local Percent = Instance.new("TextLabel")
-Percent.Parent = PercentBG
-Percent.Size = UDim2.new(1,0,1,0)
-Percent.BackgroundTransparency = 1
-Percent.Text = "0%"
-Percent.Font = Enum.Font.SourceSansBold
-Percent.TextSize = 22
-Percent.TextColor3 = Color3.new(1,1,1)
-Percent.ZIndex = 6
-
---// Fade In
-TweenService:Create(BG, TweenInfo.new(0.6), {BackgroundTransparency = 0}):Play()
-
---// Loading Logic
-local duration = 5
-local start = tick()
-local angle = math.pi / 2
-local radius = 80
-
-local conn
-conn = RunService.RenderStepped:Connect(function(dt)
-	local alpha = math.clamp((tick() - start) / duration, 0, 1)
-	Percent.Text = math.floor(alpha * 100) .. "%"
-
-	-- Ring rotate
-	Ring.Rotation += 0.4
-
-	-- Planet orbit (Right → Left → End at Top)
-	angle = (math.pi/2) - (math.pi*2*alpha)
-	Planet.Position = UDim2.new(
-		0.5, math.cos(angle) * radius,
-		0.5, math.sin(angle) * radius
-	)
+-- Tween โลโก้ใหญ่ไปมุมซ้ายล่างเล็กน้อย
+spawn(function()
+    while true do
+        wait(0.01)
+        trajectory.Rotation = trajectory.Rotation + 0.3
+    end
 end)
 
-task.wait(duration)
-conn:Disconnect()
+-- Tween โลโก้วงกลม R
+spawn(function()
+    local targetPos = UDim2.new(0.1, 0, 0.8, 0)
+    R:TweenPosition(targetPos, "Out", "Sine", 0.4, false)
+end)
 
---// ENDING (เข้าแบบไหน ออกแบบนั้น)
-TweenService:Create(BG, TweenInfo.new(0.6), {BackgroundTransparency = 1}):Play()
-TweenService:Create(Center, TweenInfo.new(0.5), {Size = UDim2.new(0,0,0,0)}):Play()
-TweenService:Create(PercentBG, TweenInfo.new(0.4), {BackgroundTransparency = 1}):Play()
-TweenService:Create(Percent, TweenInfo.new(0.4), {TextTransparency = 1}):Play()
+-- โคจรดาวเคราะห์เล็กรอบ R
+spawn(function()
+    local angle = 0
+    local angleIncrement = 0.02
+    local orbitRadius = 55
+    while wait() do
+        angle = angle + angleIncrement
+        local x = math.cos(angle) * orbitRadius
+        local y = math.sin(angle) * orbitRadius
+        Earth.Position = UDim2.new(0.5, x, 0.5, y)
+    end
+end)
 
-task.wait(0.7)
-Gui:Destroy()
+-- Tween / Fade in/out Green
+spawn(function()
+    local Tween = TweenService
+    wait(2)
+    while true do
+        local fadeIn = Tween:Create(Green, TweenInfo.new(0.5), {ImageTransparency = 0})
+        fadeIn:Play()
+        wait(0.3)
+        local fadeOut = Tween:Create(Green, TweenInfo.new(0.5), {ImageTransparency = 1})
+        fadeOut:Play()
+        wait(4)
+    end
+end)
+
+-- Tween Green ไปมุมซ้ายล่างเล็กน้อย
+spawn(function()
+    local targetPos = UDim2.new(0.1, 0, 0.8, 0)
+    Green:TweenPosition(targetPos, "Out", "Sine", 0.4, false)
+end)
+
+print("Loaded At", game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name)
+wait(0.1)
+print("Welcome,", player.Name)
