@@ -1,97 +1,67 @@
--- Services
-local Players = game:GetService("Players")
-local TweenService = game:GetService("TweenService")
-local RunService = game:GetService("RunService")
 
-local player = Players.LocalPlayer
-local playerGui = player:WaitForChild("PlayerGui")
+local player = game.Players.LocalPlayer
+local TweenService = game:GetService("TweenService")
 
 -- ScreenGui
-local ProjectPP = Instance.new("ScreenGui")
-ProjectPP.Name = "Project PP"
-ProjectPP.Parent = playerGui
-ProjectPP.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-ProjectPP.DisplayOrder = 999
-ProjectPP.ResetOnSpawn = false
+local gui = Instance.new("ScreenGui")
+gui.Name = "FullScreenLoading"
+gui.ResetOnSpawn = false
+gui.IgnoreGuiInset = true -- เต็มจอจริง (ไม่โดนแถบด้านบน)
+gui.Parent = player:WaitForChild("PlayerGui")
 
--- ฟังก์ชันสร้าง ImageLabel เป็นวงกลม
-local function CreateCircularImage(parent, size, position, zIndex, imageId)
-    local img = Instance.new("ImageLabel")
-    img.Parent = parent
-    img.Size = size
-    img.Position = position
-    img.ZIndex = zIndex or 1
-    img.BackgroundTransparency = 1
-    img.Image = "rbxassetid://"..imageId
-    img.AnchorPoint = Vector2.new(0.5, 0.5)
-    
-    local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(0.5, 0)
-    corner.Parent = img
-    
-    return img
-end
+-- Background (Full Screen)
+local bg = Instance.new("Frame")
+bg.Size = UDim2.new(1, 0, 1, 0)
+bg.Position = UDim2.new(0, 0, 0, 0)
+bg.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+bg.Parent = gui
 
--- trajectory ใช้ ID เดิม
-local trajectory = CreateCircularImage(ProjectPP, UDim2.new(0, 0, 0, 0), UDim2.new(0, 0, 0, 0), 0, "7102118272")
+-- Center Container
+local box = Instance.new("Frame")
+box.Size = UDim2.new(0, 320, 0, 140)
+box.Position = UDim2.new(0.5, -160, 0.5, -70)
+box.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+box.Parent = bg
 
--- โลโก้วงกลมใหญ่ซ้อน (R) ใช้ ID ใหม่
-local R = CreateCircularImage(ProjectPP, UDim2.new(0, 110, 0, 110), UDim2.new(0.1, 0, 0.8, 0), 3, "96254927950057")
+Instance.new("UICorner", box).CornerRadius = UDim.new(0, 14)
 
--- ดาวเคราะห์เล็ก (Earth) ใช้ ID ใหม่
-local Earth = CreateCircularImage(R, UDim2.new(0, 20, 0, 20), UDim2.new(0.5, 0, 0.5, 0), 4, "96254927950057")
+-- Loading Text
+local text = Instance.new("TextLabel")
+text.Size = UDim2.new(1, 0, 0, 40)
+text.Position = UDim2.new(0, 0, 0, 20)
+text.BackgroundTransparency = 1
+text.Text = "Loading..."
+text.TextColor3 = Color3.fromRGB(255, 255, 255)
+text.Font = Enum.Font.GothamBold
+text.TextScaled = true
+text.Parent = box
 
--- เอฟเฟกต์ Glow / Green ใช้ ID ใหม่
-local Green = CreateCircularImage(ProjectPP, UDim2.new(0, 110, 0, 110), UDim2.new(0.1, 0, 0.8, 0), 6, "96254927950057")
-Green.ImageTransparency = 1
+-- Bar Background
+local barBG = Instance.new("Frame")
+barBG.Size = UDim2.new(0.8, 0, 0, 14)
+barBG.Position = UDim2.new(0.1, 0, 0.65, 0)
+barBG.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+barBG.Parent = box
 
--- Tween โลโก้ใหญ่ไปมุมซ้ายล่างเล็กน้อย
-spawn(function()
-    while true do
-        wait(0.01)
-        trajectory.Rotation = trajectory.Rotation + 0.3
-    end
+Instance.new("UICorner", barBG).CornerRadius = UDim.new(1, 0)
+
+-- Bar
+local bar = Instance.new("Frame")
+bar.Size = UDim2.new(0, 0, 1, 0)
+bar.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+bar.Parent = barBG
+
+Instance.new("UICorner", bar).CornerRadius = UDim.new(1, 0)
+
+-- Tween (3 seconds)
+local tween = TweenService:Create(
+	bar,
+	TweenInfo.new(3, Enum.EasingStyle.Linear),
+	{ Size = UDim2.new(1, 0, 1, 0) }
+)
+tween:Play()
+
+-- Remove after 3 seconds
+task.delay(3, function()
+	gui:Destroy()
 end)
-
--- Tween โลโก้วงกลม R
-spawn(function()
-    local targetPos = UDim2.new(0.1, 0, 0.8, 0)
-    R:TweenPosition(targetPos, "Out", "Sine", 0.4, false)
-end)
-
--- โคจรดาวเคราะห์เล็กรอบ R
-spawn(function()
-    local angle = 0
-    local angleIncrement = 0.02
-    local orbitRadius = 55
-    while wait() do
-        angle = angle + angleIncrement
-        local x = math.cos(angle) * orbitRadius
-        local y = math.sin(angle) * orbitRadius
-        Earth.Position = UDim2.new(0.5, x, 0.5, y)
-    end
-end)
-
--- Tween / Fade in/out Green
-spawn(function()
-    local Tween = TweenService
-    wait(2)
-    while true do
-        local fadeIn = Tween:Create(Green, TweenInfo.new(0.5), {ImageTransparency = 0})
-        fadeIn:Play()
-        wait(0.3)
-        local fadeOut = Tween:Create(Green, TweenInfo.new(0.5), {ImageTransparency = 1})
-        fadeOut:Play()
-        wait(4)
-    end
-end)
-
--- Tween Green ไปมุมซ้ายล่างเล็กน้อย
-spawn(function()
-    local targetPos = UDim2.new(0.1, 0, 0.8, 0)
-    Green:TweenPosition(targetPos, "Out", "Sine", 0.4, false)
-end)
-
-print("Loaded At", game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name)
-wait(0.1)
-print("Welcome,", player.Name)
