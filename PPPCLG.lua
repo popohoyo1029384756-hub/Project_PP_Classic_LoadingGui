@@ -1,66 +1,133 @@
-local player = game.Players.LocalPlayer
-local TweenService = game:GetService("TweenService")
+local LOGO = Instance.new("ScreenGui")
 
--- ScreenGui
-local gui = Instance.new("ScreenGui")
-gui.Name = "FullScreenLoading"
-gui.ResetOnSpawn = false
-gui.IgnoreGuiInset = true -- เต็มจอจริง (ไม่โดนแถบด้านบน)
-gui.Parent = player:WaitForChild("PlayerGui")
+local Face = Instance.new("ImageLabel")
 
--- Background (Full Screen)
-local bg = Instance.new("Frame")
-bg.Size = UDim2.new(1, 0, 1, 0)
-bg.Position = UDim2.new(0, 0, 0, 0)
-bg.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
-bg.Parent = gui
+local Orbit = Instance.new("ImageLabel")
 
--- Center Container
-local box = Instance.new("Frame")
-box.Size = UDim2.new(0, 320, 0, 140)
-box.Position = UDim2.new(0.5, -160, 0.5, -70)
-box.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-box.Parent = bg
+local UIAspectRatioConstraint = Instance.new("UIAspectRatioConstraint")
 
-Instance.new("UICorner", box).CornerRadius = UDim.new(0, 14)
+local UICorner = Instance.new("UICorner")
 
--- Loading Text
-local text = Instance.new("TextLabel")
-text.Size = UDim2.new(1, 0, 0, 40)
-text.Position = UDim2.new(0, 0, 0, 20)
-text.BackgroundTransparency = 1
-text.Text = "Loading..."
-text.TextColor3 = Color3.fromRGB(255, 255, 255)
-text.Font = Enum.Font.GothamBold
-text.TextScaled = true
-text.Parent = box
+local UIAspectRatioConstraint_2 = Instance.new("UIAspectRatioConstraint")
 
--- Bar Background
-local barBG = Instance.new("Frame")
-barBG.Size = UDim2.new(0.8, 0, 0, 14)
-barBG.Position = UDim2.new(0.1, 0, 0.65, 0)
-barBG.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-barBG.Parent = box
+--Properties:
 
-Instance.new("UICorner", barBG).CornerRadius = UDim.new(1, 0)
+LOGO.Name = "LOGO"
 
--- Bar
-local bar = Instance.new("Frame")
-bar.Size = UDim2.new(0, 0, 1, 0)
-bar.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
-bar.Parent = barBG
+LOGO.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
-Instance.new("UICorner", bar).CornerRadius = UDim.new(1, 0)
+LOGO.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
--- Tween (3 seconds)
-local tween = TweenService:Create(
-	bar,
-	TweenInfo.new(3, Enum.EasingStyle.Linear),
-	{ Size = UDim2.new(1, 0, 1, 0) }
-)
-tween:Play()
+LOGO.ResetOnSpawn = false
 
--- Remove after 3 seconds
-task.delay(3, function()
-	gui:Destroy()
-end)
+Face.Name = "Face"
+
+Face.Parent = LOGO
+
+Face.Active = true
+
+Face.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+
+Face.BackgroundTransparency = 1.000
+
+Face.BorderColor3 = Color3.fromRGB(0, 0, 0)
+
+Face.BorderSizePixel = 0
+
+Face.Position = UDim2.new(-0.0848358572, 0, 0.40941292, 0)
+
+Face.Size = UDim2.new(0.0988271087, 0, 0.108296312, 0)
+
+Face.Image = "rbxassetid://109266385905091"
+
+Orbit.Name = "Orbit"
+
+Orbit.Parent = Face
+
+Orbit.AnchorPoint = Vector2.new(0.5, 0.5)
+
+Orbit.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+
+Orbit.BackgroundTransparency = 1.000
+
+Orbit.BorderColor3 = Color3.fromRGB(0, 0, 0)
+
+Orbit.BorderSizePixel = 0
+
+Orbit.Position = UDim2.new(0.495019555, 0, 0.489923686, 0)
+
+Orbit.Size = UDim2.new(2.24704003, 0, 1.5323751, 0)
+
+Orbit.ZIndex = 2147483647
+
+Orbit.Image = "http://www.roblox.com/asset/?id=109266385905091"
+
+Orbit.ScaleType = Enum.ScaleType.Fit
+
+UIAspectRatioConstraint.Parent = Orbit
+
+UICorner.CornerRadius = UDim.new(1, 0)
+
+UICorner.Parent = Face
+
+UIAspectRatioConstraint_2.Parent = Face
+
+-- Scripts:
+
+local function LLLBHB_fake_script() -- Orbit.LocalScript 
+
+	local script = Instance.new('LocalScript', Orbit)
+
+	local step = (2*math.pi)/450
+
+	local rotvel = 1
+
+	local theta = 0
+
+	local Ring = script.Parent
+
+	
+
+	while game:GetService'RunService'.Heartbeat:Wait() do
+
+		theta = theta < 360 and theta + step or 0
+
+		Ring.Rotation = Ring.Rotation < 360 and Ring.Rotation + rotvel or 0
+
+		game:GetService'RunService'.Heartbeat:wait()
+
+	end
+
+end
+
+coroutine.wrap(LLLBHB_fake_script)()
+
+local function NLSE_fake_script() -- LOGO. 
+
+	local script = Instance.new('LocalScript', LOGO)
+
+	local logo = script.Parent:FindFirstChildOfClass("ImageLabel")
+
+	
+
+	logo:TweenPosition(UDim2.new(0.465, 0,0.441,0), Enum.EasingDirection.Out, Enum.EasingStyle.Sine, 1)
+
+	wait(2)
+
+	logo:TweenPosition(UDim2.new(0.022,0,0.853,0), Enum.EasingDirection.Out, Enum.EasingStyle.Sine, 1)
+
+	
+
+end
+
+coroutine.wrap(NLSE_fake_script)()
+
+local function JPADOFI_fake_script() -- LOGO.Script 
+
+	local script = Instance.new('Script', LOGO)
+
+	script.Parent.ResetOnSpawn = false
+
+end
+
+coroutine.wrap(JPADOFI_fake_script)()
