@@ -60,7 +60,7 @@ Orbit.Size = UDim2.new(2.24704003, 0, 1.5323751, 0)
 
 Orbit.ZIndex = 2147483647
 
-Orbit.Image = "http://www.roblox.com/asset/?id=109266385905091"
+Orbit.Image = "http://www.roblox.com/asset/?id=107515080715823"
 
 Orbit.ScaleType = Enum.ScaleType.Fit
 
