@@ -38,7 +38,7 @@ Face.Position = UDim2.new(-0.0848358572, 0, 0.40941292, 0)
 
 Face.Size = UDim2.new(0.0988271087, 0, 0.108296312, 0)
 
-Face.Image = "rbxassetid://109266385905091"
+Face.Image = "rbxassetid://107515080715823"
 
 Orbit.Name = "Orbit"
 
